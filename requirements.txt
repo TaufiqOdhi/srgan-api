@@ -1,0 +1,5 @@
+fastapi[all]
+pymongo
+pytest
+pytest-xdist
+# requirements pada srgan compression restoration
