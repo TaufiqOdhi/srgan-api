@@ -11,7 +11,8 @@ from ai.model.prune_l2_norm import GeneratorPruned as GeneratorL2Norm
 from ai.config import DEVICE
 
 
-base_dir_checkpoint = '/mnt/Windows/Users/taufi/MyFile/Projects/image-compression-restoration/04_1_binaryCompression_srganRecovery_layerWisePruning/checkpoints'
+# base_dir_checkpoint = '/mnt/Windows/Users/taufi/MyFile/Projects/image-compression-restoration/04_1_binaryCompression_srganRecovery_layerWisePruning/checkpoints'
+base_dir_checkpoint = 'ai/checkpoints'
 
 
 def _srgan(gen, image, CKPT_PTH, filename, srgan_type):

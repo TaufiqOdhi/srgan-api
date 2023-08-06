@@ -1,5 +1,8 @@
 fastapi[all]
-pymongo
+# pymongo
 pytest
 pytest-xdist
-# requirements pada srgan compression restoration
+albumentations
+tqdm
+fvcore
+pydicom
