@@ -2,3 +2,5 @@ __pycache__/
 .vscode/
 saved_files/
 vram_logs/
+.devcontainer/
+ai/checkpoints/
