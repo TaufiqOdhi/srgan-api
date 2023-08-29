@@ -43,15 +43,7 @@ async def no_prune(image: UploadFile = File(), filename: str = Form()):
     completed_process = subprocess.run(cmd, capture_output=True, text=True)
     
     return dict(result=completed_process.stdout, error=completed_process.stderr)
-    # CKPT_PTH = f'{base_dir_checkpoint}/no_prune/gen.pth.tar'
-    # gen = Generator()
-    # return _srgan(
-    #     gen=gen,
-    #     image=image,
-    #     CKPT_PTH=CKPT_PTH,
-    #     filename=filename,
-    #     srgan_type='noPrune'
-    # )
+    
 
 async def random_unstructured(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form()):
     CKPT_PTH = f'{base_dir_checkpoint}/randomUnstructuredGlobal/176-epoch-pruned-model/{prune_amount}/gen.pth.tar'
