@@ -9,7 +9,7 @@ main_router.add_api_route(
     no_prune,
     methods=['post'],
     tags=['srgan'],
-    response_class=FileResponse
+    # response_class=FileResponse
 )
 
 main_router.add_api_route(

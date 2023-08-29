@@ -3,9 +3,14 @@ version: '3.8'
 services:
   api:
     build: .
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
+    # runtime: nvidia
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - srgan_result:/app/saved_files
     ports:
       - "8000:8000"
-    
+
+volumes:
+  srgan_result:
+    external: true
