@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
-from endpoints.super_resolution import no_prune, random_unstructured, l1_norm, l2_norm
+from endpoints.super_resolution import *
 
 main_router = APIRouter()
 
@@ -13,11 +13,27 @@ main_router.add_api_route(
 )
 
 main_router.add_api_route(
-    '/random_unstructured',
-    random_unstructured,
+    '/random_unstructured/30',
+    random_unstructured_30,
     methods=['post'],
     tags=['srgan'],
-    response_class=FileResponse
+    # response_class=FileResponse
+)
+
+main_router.add_api_route(
+    '/random_unstructured/50',
+    random_unstructured_50,
+    methods=['post'],
+    tags=['srgan'],
+    # response_class=FileResponse
+)
+
+main_router.add_api_route(
+    '/random_unstructured/70',
+    random_unstructured_70,
+    methods=['post'],
+    tags=['srgan'],
+    # response_class=FileResponse
 )
 
 main_router.add_api_route(
