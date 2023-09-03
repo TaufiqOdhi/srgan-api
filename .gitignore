@@ -4,3 +4,4 @@ saved_files/
 vram_logs/
 .devcontainer/
 ai/checkpoints/
+.pytest_cache/
