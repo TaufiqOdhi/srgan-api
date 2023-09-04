@@ -1,8 +1,5 @@
 fastapi[all]
-# pymongo
+pymongo
 pytest
 pytest-xdist
-albumentations
-tqdm
-fvcore
-pydicom
+minio

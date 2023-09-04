@@ -3,14 +3,22 @@ from fastapi import File, Form, UploadFile
 import subprocess
 import os
 from pathlib import Path
+from minio.error import S3Error
+from minio_connection import minio_client, bucket_name
 
 
 async def no_prune(image: UploadFile = File(), filename: str = Form()):
     input_filename = f'{filename}_no_prune_{datetime.datetime.now()}{Path(image.filename).suffix}'
     input_file = os.path.expanduser(f'~/Projects/Thesis/input_files/{input_filename}')
-    with open(input_file, "wb+") as file_object:
-        file_object.write(image.file.read())
-        file_object.close()
+
+    # Upload FIle to Minio bucket
+    minio_client.put_object(
+        bucket_name=f'{bucket_name}',
+        object_name=f'input_files/{input_filename}',
+        data=image.file,
+        length=-1,  # Unknown size, read till EOF,
+        part_size=5 << 20 # 5MB chunks
+    )
     cmd = ["docker", "run", "--rm", "--runtime", 'nvidia',
            "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
            "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),
