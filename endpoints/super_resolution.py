@@ -1,4 +1,5 @@
 import datetime
+from io import BytesIO
 from fastapi import File, Form, UploadFile
 import subprocess
 import os
@@ -10,6 +11,7 @@ from minio_connection import minio_client, bucket_name
 async def no_prune(image: UploadFile = File(), filename: str = Form()):
     input_filename = f'{filename}_no_prune_{datetime.datetime.now()}{Path(image.filename).suffix}'
     minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
+    ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
     # Upload FIle to Minio bucket
     minio_client.put_object(
@@ -22,7 +24,8 @@ async def no_prune(image: UploadFile = File(), filename: str = Form()):
     cmd = ["docker", "run", "--rm", "--runtime", 'nvidia',
            "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
            "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),
-           "-e", f'FILENAME={input_filename}', "-e", f"MINIO_HOST={minio_host}", "taufiqodhi/srgan-ai-module:no_prune"]
+           "-e", f'FILENAME={input_filename}', "-e", f"MINIO_HOST={minio_host}",
+           "-e", f'IP_HOST={ip_host}',"taufiqodhi/srgan-ai-module:no_prune"]
     completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     
     return dict(result=completed_process.stdout, error=completed_process.stderr)
@@ -154,3 +157,13 @@ async def l2_norm_70(image: UploadFile = File(), filename: str = Form()):
     completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     
     return dict(result=completed_process.stdout, error=completed_process.stderr)
+
+async def vram_logs(filename: str = Form()):
+    vram_log = bytes(os.popen('nvidia-smi').read(), 'utf-8')
+    minio_client.put_object(
+        bucket_name=bucket_name,
+        object_name=f'vram_logs/{filename}',
+        data=BytesIO(vram_log),
+        length=len(vram_log)
+    )
+    return vram_log.decode()

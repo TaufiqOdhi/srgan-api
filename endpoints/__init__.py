@@ -83,3 +83,10 @@ main_router.add_api_route(
     tags=['srgan'],
     # response_class=FileResponse
 )
+
+main_router.add_api_route(
+    '/vram_logs',
+    vram_logs,
+    methods=['post'],
+    tags=['logs'],
+)
