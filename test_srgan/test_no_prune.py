@@ -14,6 +14,7 @@ def test_no_prune_1():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/no_prune/vram_consumption_{filename}_noPrune_{datetime.datetime.now()}.txt"')
 
 def test_no_prune_2():
@@ -24,6 +25,7 @@ def test_no_prune_2():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/no_prune/vram_consumption_{filename}_noPrune_{datetime.datetime.now()}.txt"')
 
 def test_no_prune_3():
@@ -34,6 +36,7 @@ def test_no_prune_3():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/no_prune/vram_consumption_{filename}_noPrune_{datetime.datetime.now()}.txt"')
 
 def test_no_prune_4():
@@ -44,6 +47,7 @@ def test_no_prune_4():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/no_prune/vram_consumption_{filename}_noPrune_{datetime.datetime.now()}.txt"')
 
 def test_no_prune_5():
@@ -54,6 +58,7 @@ def test_no_prune_5():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/no_prune/vram_consumption_{filename}_noPrune_{datetime.datetime.now()}.txt"')
 
 def test_no_prune_6():
@@ -64,4 +69,5 @@ def test_no_prune_6():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/no_prune/vram_consumption_{filename}_noPrune_{datetime.datetime.now()}.txt"')
