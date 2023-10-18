@@ -1,4 +1,5 @@
 import datetime
+import json
 from io import BytesIO
 from fastapi import File, Form, UploadFile
 import subprocess
@@ -6,11 +7,14 @@ import os
 from pathlib import Path
 from minio.error import S3Error
 from minio_connection import minio_client, bucket_name
+from redis_connection import redis_client
 
 
 async def no_prune(image: UploadFile = File(), filename: str = Form()):
     input_filename = f'{filename}_no_prune_{datetime.datetime.now()}{Path(image.filename).suffix}'
     minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
+    # ip_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
+    # minio_host = ip_host
     ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
     # Upload FIle to Minio bucket
@@ -21,6 +25,23 @@ async def no_prune(image: UploadFile = File(), filename: str = Form()):
         length=-1,  # Unknown size, read till EOF,
         part_size=5 << 20 # 5MB chunks
     )
+
+    # enqueue to redis
+    redis_client.lpush('srgan', json.dumps(dict(
+        filename=input_filename,
+        image_name='srgan-ai-module:no_prune',
+        ai_type='srgan'
+    )))
+
+
+    # nanti disebelah sini akan dijalankan sebuah metode untuk menentukan proses yang datang ini akan
+    # dimasukkan pada worker mana ?
+    # 
+
+    # dequeue from redis
+    item = json.loads(redis_client.rpop('srgan').decode('utf-8'))
+    print(item)
+
     cmd = ["docker", "run", "--rm", "--runtime", 'nvidia',
            "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
            "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),

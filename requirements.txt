@@ -1,5 +1,6 @@
 fastapi[all]
-pymongo
+redis
 pytest
 pytest-xdist
 minio
+numpy
