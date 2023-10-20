@@ -1,5 +1,6 @@
 import datetime
 import json
+import gspread
 from io import BytesIO
 from fastapi import File, Form, UploadFile
 import subprocess
@@ -8,9 +9,12 @@ from pathlib import Path
 from minio.error import S3Error
 from minio_connection import minio_client, bucket_name
 from redis_connection import redis_client
+from google.oauth2.credentials import Credentials
+from login_gsheet import SCOPES, TOKEN_LOCATION
 
 
 async def no_prune(image: UploadFile = File(), filename: str = Form()):
+    start_timestamp = datetime.datetime.now()
     input_filename = f'{filename}_no_prune_{datetime.datetime.now()}{Path(image.filename).suffix}'
     minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
     # ip_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
@@ -46,7 +50,8 @@ async def no_prune(image: UploadFile = File(), filename: str = Form()):
            "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
            "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),
            "-e", f'FILENAME={input_filename}', "-e", f"MINIO_HOST={minio_host}",
-           "-e", f'IP_HOST={ip_host}',"taufiqodhi/srgan-ai-module:no_prune"]
+           "-e", f'IP_HOST={ip_host}', "-e", f"START_TIMESTAMP={start_timestamp}",
+           "taufiqodhi/srgan-ai-module:no_prune"]
     completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     
     return dict(result=completed_process.stdout, error=completed_process.stderr)
@@ -179,12 +184,21 @@ async def l2_norm_70(image: UploadFile = File(), filename: str = Form()):
     
     return dict(result=completed_process.stdout, error=completed_process.stderr)
 
-async def vram_logs(filename: str = Form()):
-    vram_log = bytes(os.popen('nvidia-smi').read(), 'utf-8')
+async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form()):
+    vram_log = os.popen('nvidia-smi').read()
+
+    gsheet_client = gspread.Client(Credentials.from_authorized_user_file(TOKEN_LOCATION, SCOPES))
+    spreadsheet = gsheet_client.open_by_url('https://docs.google.com/spreadsheets/d/1PaFime-HZc-U9Zt3MwzZLolC5BMQWTauUuqZ_JRNIhI/edit#gid=0')
+    sheet = spreadsheet.get_worksheet(0)
+    sheet.append_row([f'http://localhost:9000/super-resolution/input_files/{image_filename}',
+                      f'http://localhost:9000/super-resolution/output_files/{image_filename}',
+                      f'http://localhost:9000/super-resolution/vram_logs/{filename}',
+                      start_timestamp, datetime.datetime.now().__str__()])
+    
     minio_client.put_object(
         bucket_name=bucket_name,
         object_name=f'vram_logs/{filename}',
-        data=BytesIO(vram_log),
+        data=BytesIO(bytes(vram_log, 'utf-8')),
         length=len(vram_log)
     )
-    return vram_log.decode()
+    return vram_log

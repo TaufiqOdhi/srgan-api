@@ -5,3 +5,5 @@ vram_logs/
 .devcontainer/
 ai/checkpoints/
 .pytest_cache/
+token.json
+credentials.json
