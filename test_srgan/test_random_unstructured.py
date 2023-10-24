@@ -15,7 +15,7 @@ def test_random_unstructured_1():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_2():
     filename = '2'
@@ -26,7 +26,7 @@ def test_random_unstructured_2():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_3():
     filename = '3'
@@ -37,7 +37,7 @@ def test_random_unstructured_3():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_4():
     filename = '4'
@@ -48,7 +48,7 @@ def test_random_unstructured_4():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_5():
     filename = '5'
@@ -59,7 +59,7 @@ def test_random_unstructured_5():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_6():
     filename = '6'
@@ -70,4 +70,4 @@ def test_random_unstructured_6():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')

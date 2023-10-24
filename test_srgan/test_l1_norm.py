@@ -15,7 +15,7 @@ def test_l1_norm_1():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
 
 def test_l1_norm_2():
     filename = '2'
@@ -26,7 +26,7 @@ def test_l1_norm_2():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
 
 def test_l1_norm_3():
     filename = '3'
@@ -37,7 +37,7 @@ def test_l1_norm_3():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
 
 def test_l1_norm_4():
     filename = '4'
@@ -48,7 +48,7 @@ def test_l1_norm_4():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
 
 def test_l1_norm_5():
     filename = '5'
@@ -59,7 +59,7 @@ def test_l1_norm_5():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
 
 def test_l1_norm_6():
     filename = '6'
@@ -70,4 +70,4 @@ def test_l1_norm_6():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
-    os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
+    # os.system(f'nvidia-smi > "vram_logs/l1_norm/vram_consumption_{filename}_{prune_amount}l1Norm_{datetime.datetime.now()}.txt"')
