@@ -16,16 +16,12 @@ from login_gsheet import SCOPES, TOKEN_LOCATION
 NODE_WORKER = 'Odhi-Laptop'
 
 
-async def no_prune(image: UploadFile = File(), filename: str = Form()):
+async def no_prune(image: UploadFile = File(), filename: str = Form(), node_worker  : str = Form()):
     start_timestamp = datetime.datetime.now()
     input_filename = f'{filename}_no_prune_{datetime.datetime.now()}{Path(image.filename).suffix}'
     
-    # ip_host = '10.21.87.160'
-    # minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
-
-    ip_host = '192.168.100.254'
-    minio_host = 'a0c8-36-68-8-56.ngrok-free.app'
-
+    ip_host = node_worker
+    minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
     # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
     # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
     
@@ -66,11 +62,14 @@ async def no_prune(image: UploadFile = File(), filename: str = Form()):
     return dict(result=completed_process.stdout, error=completed_process.stderr)
     
 
-async def random_unstructured(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form()):
+async def random_unstructured(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form()):
     start_timestamp = datetime.datetime.now()
     input_filename = f'{filename}_random_unstructured_{prune_amount}_{datetime.datetime.now()}{Path(image.filename).suffix}'
-    minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
-    ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
+    
+    minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
+    ip_host = node_worker
+    # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
+    # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
     # Upload FIle to Minio bucket
     minio_client.put_object(
@@ -107,11 +106,14 @@ async def random_unstructured(image: UploadFile = File(), filename: str = Form()
     return dict(result=completed_process.stdout, error=completed_process.stderr)
 
 
-async def l1_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form()):
+async def l1_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form()):
     start_timestamp = datetime.datetime.now()
     input_filename = f'{filename}_l1_norm_{prune_amount}_{datetime.datetime.now()}{Path(image.filename).suffix}'
-    minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
-    ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
+    
+    minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
+    ip_host = node_worker
+    # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
+    # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
     # Upload FIle to Minio bucket
     minio_client.put_object(
@@ -148,11 +150,14 @@ async def l1_norm(image: UploadFile = File(), filename: str = Form(), prune_amou
     return dict(result=completed_process.stdout, error=completed_process.stderr)
 
 
-async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form()):
+async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form()):
     start_timestamp = datetime.datetime.now()
     input_filename = f'{filename}_l2_norm_{prune_amount}_{datetime.datetime.now()}{Path(image.filename).suffix}'
-    minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
-    ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
+    
+    minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
+    ip_host = node_worker
+    # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
+    # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
     # Upload FIle to Minio bucket
     minio_client.put_object(
