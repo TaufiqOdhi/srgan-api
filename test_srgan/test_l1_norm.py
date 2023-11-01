@@ -1,9 +1,10 @@
-from test_srgan import client, base_dir
+from test_srgan import client, base_dir, worker_list
 import os
 import datetime
 
 
 srgan_enpoint = '/l1_norm'
+node_worker = worker_list[1][0]
 
 
 def test_l1_norm_1():
@@ -11,7 +12,7 @@ def test_l1_norm_1():
     prune_amount = 30
     res = client.post(
         srgan_enpoint,
-        data=dict(filename=filename, prune_amount=prune_amount),
+        data=dict(filename=filename, prune_amount=prune_amount, node_worker=node_worker),
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
@@ -22,7 +23,7 @@ def test_l1_norm_2():
     prune_amount = 50
     res = client.post(
         srgan_enpoint,
-        data=dict(filename=filename, prune_amount=prune_amount),
+        data=dict(filename=filename, prune_amount=prune_amount, node_worker=node_worker),
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
@@ -33,7 +34,7 @@ def test_l1_norm_3():
     prune_amount = 70
     res = client.post(
         srgan_enpoint,
-        data=dict(filename=filename, prune_amount=prune_amount),
+        data=dict(filename=filename, prune_amount=prune_amount, node_worker=node_worker),
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
@@ -44,7 +45,7 @@ def test_l1_norm_4():
     prune_amount = 30
     res = client.post(
         srgan_enpoint,
-        data=dict(filename=filename, prune_amount=prune_amount),
+        data=dict(filename=filename, prune_amount=prune_amount, node_worker=node_worker),
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
@@ -55,7 +56,7 @@ def test_l1_norm_5():
     prune_amount = 50
     res = client.post(
         srgan_enpoint,
-        data=dict(filename=filename, prune_amount=prune_amount),
+        data=dict(filename=filename, prune_amount=prune_amount, node_worker=node_worker),
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
