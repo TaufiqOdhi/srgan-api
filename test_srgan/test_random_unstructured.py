@@ -4,7 +4,7 @@ import datetime
 
 
 srgan_endpoint = '/random_unstructured'
-node_worker = worker_list[2][0]
+node_worker = worker_list[1][0]
 
 
 def test_random_unstructured_1():
@@ -16,6 +16,7 @@ def test_random_unstructured_1():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_2():
@@ -27,6 +28,7 @@ def test_random_unstructured_2():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_3():
@@ -38,6 +40,7 @@ def test_random_unstructured_3():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_4():
@@ -49,6 +52,7 @@ def test_random_unstructured_4():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_5():
@@ -60,6 +64,7 @@ def test_random_unstructured_5():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
 
 def test_random_unstructured_6():
@@ -71,4 +76,5 @@ def test_random_unstructured_6():
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200
+    assert not res.json().get('error')
     # os.system(f'nvidia-smi > "vram_logs/random_unstructured/vram_consumption_{filename}_{prune_amount}randomUnstructured_{datetime.datetime.now()}.txt"')
