@@ -67,7 +67,7 @@ def test_l1_norm_6():
     prune_amount = 70
     res = client.post(
         srgan_enpoint,
-        data=dict(filename=filename, prune_amount=prune_amount),
+        data=dict(filename=filename, prune_amount=prune_amount, node_worker=node_worker),
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
     assert res.status_code == 200

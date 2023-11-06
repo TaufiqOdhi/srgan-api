@@ -42,3 +42,10 @@ main_router.add_api_route(
     methods=['post'],
     tags=['logs'],
 )
+
+main_router.add_api_route(
+    '/get_current_datetime',
+    get_current_datetime,
+    methods=['get'],
+    tags=['logs']
+)

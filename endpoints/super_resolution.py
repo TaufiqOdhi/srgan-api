@@ -1,6 +1,7 @@
 import datetime
 import json
 import gspread
+import requests
 from io import BytesIO
 from fastapi import File, Form, UploadFile
 import subprocess
@@ -198,7 +199,7 @@ async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amou
     return dict(result=completed_process.stdout, error=completed_process.stderr)
 
 
-async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form(), tipe_model: str = Form()):
+async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form(), tipe_model: str = Form(), ip_host: str = Form()):
     vram_log = os.popen('nvidia-smi').read()
 
     gsheet_client = gspread.Client(Credentials.from_authorized_user_file(TOKEN_LOCATION, SCOPES))
@@ -207,7 +208,7 @@ async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image
     sheet.append_row([f'http://localhost:9000/super-resolution/input_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/output_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/vram_logs/{filename}',
-                      start_timestamp, datetime.datetime.now().__str__(), tipe_model, NODE_WORKER])
+                      start_timestamp, requests.get(f'http://{ip_host}:8000/get_current_datetime').text[1:-1], tipe_model, NODE_WORKER])
     
     minio_client.put_object(
         bucket_name=bucket_name,
@@ -216,3 +217,7 @@ async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image
         length=len(vram_log)
     )
     return vram_log 
+
+
+async def get_current_datetime():
+    return datetime.datetime.now()

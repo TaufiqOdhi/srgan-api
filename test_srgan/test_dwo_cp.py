@@ -11,16 +11,17 @@ phi = 1.61803398875
 
 
 def _worker_function(srgan_endpoint, filename, prune_amount, node_worker):
-    client.post(
+    res = client.post(
         srgan_endpoint,
         data=dict(filename=filename, prune_amount=prune_amount, node_worker=node_worker),
         files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
     )
+    assert res.status_code == 200
 
 
 # menggantikan vm dengan tipe model
 def test_dwo_cp_1():
-    list_s = get_solution_matrix(n=1, m=4, c=2, num_agent=5)
+    list_s = get_solution_matrix(n=1, m=4, c=3, num_agent=5)
     random_s = random.choice(list_s)
     print(random_s)
 

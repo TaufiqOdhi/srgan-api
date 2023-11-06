@@ -4,7 +4,7 @@ import datetime
 
 
 srgan_endpoint = '/random_unstructured'
-node_worker = worker_list[1][0]
+node_worker = worker_list[2][0]
 
 
 def test_random_unstructured_1():
