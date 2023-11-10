@@ -1,4 +1,5 @@
 import random
+import numpy as np
 import os
 import threading
 from test_srgan import client, base_dir, worker_list
@@ -21,8 +22,19 @@ def _worker_function(srgan_endpoint, filename, prune_amount, node_worker):
 
 # menggantikan vm dengan tipe model
 def test_dwo_cp_1():
-    list_s = get_solution_matrix(n=1, m=4, c=3, num_agent=5)
-    random_s = random.choice(list_s)
+    list_s = get_solution_matrix(n=5, m=4, c=3, num_agent=5)
+
+    list_eva_pm = []
+    for s in list_s:
+        list_eva_pm.append(len(np.unique(s[1])))
+
+    # find optimal solution
+    opt_eva = np.min(list_eva_pm)
+    index_opt_eva = list_eva_pm.index(opt_eva)
+    s_opt = list_s[index_opt_eva]
+
+    random_s = s_opt
+    # random_s = random.choice(list_s)
     print(random_s)
 
     threads = []
