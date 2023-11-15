@@ -7,23 +7,22 @@ from fastapi import File, Form, UploadFile
 import subprocess
 import os
 from pathlib import Path
-from minio.error import S3Error
 from minio_connection import minio_client, bucket_name
 from redis_connection import redis_client
 from google.oauth2.credentials import Credentials
 from login_gsheet import SCOPES, TOKEN_LOCATION
+from rq import Queue
 
 
 NODE_WORKER = 'Odhi-Laptop'
 
 
-async def no_prune(image: UploadFile = File(), filename: str = Form(), node_worker  : str = Form()):
-    start_timestamp = datetime.datetime.now()
-    input_filename = f'{filename}_no_prune_{datetime.datetime.now()}{Path(image.filename).suffix}'
+async def no_prune(image: UploadFile = File(), filename: str = Form(), node_worker  : str = Form(), queue_name : str = Form(), start_timestamp : str = Form()):
+    input_filename = f'{filename}_no_prune_{start_timestamp}{Path(image.filename).suffix}'
     
-    ip_host = node_worker
+    # ip_host = node_worker
     # minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
-    minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
+    # minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
     # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
     # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
     
@@ -37,40 +36,23 @@ async def no_prune(image: UploadFile = File(), filename: str = Form(), node_work
         part_size=5 << 20 # 5MB chunks
     )
 
-    # enqueue to redis
-    redis_client.lpush('srgan', json.dumps(dict(
-        filename=input_filename,
-        image_name='srgan-ai-module:no_prune',
-        ai_type='srgan'
-    )))
-
-
-    # nanti disebelah sini akan dijalankan sebuah metode untuk menentukan proses yang datang ini akan
-    # dimasukkan pada worker mana ?
-    # 
-
-    # dequeue from redis
-    item = json.loads(redis_client.rpop('srgan').decode('utf-8'))
-    print(item)
-
-    cmd = ["docker", "run", "--rm", "--runtime", 'nvidia',
-           "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
-           "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),
-           "-e", f'FILENAME={input_filename}', "-e", f"MINIO_HOST={minio_host}",
-           "-e", f'IP_HOST={ip_host}', "-e", f"START_TIMESTAMP={start_timestamp}",
-           "taufiqodhi/srgan-ai-module:no_prune"]
-    completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    queue = Queue(queue_name, connection=redis_client)
+    job = queue.enqueue(
+        'no_prune.main.srgan',
+        input_filename,
+        node_worker,
+        start_timestamp
+    )
     
-    return dict(result=completed_process.stdout, error=completed_process.stderr)
+    return job.get_id()
     
 
-async def random_unstructured(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form()):
-    start_timestamp = datetime.datetime.now()
+async def random_unstructured(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form(), queue_name : str = Form(), start_timestamp : str = Form()):
     input_filename = f'{filename}_random_unstructured_{prune_amount}_{datetime.datetime.now()}{Path(image.filename).suffix}'
     
     # minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
-    minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
-    ip_host = node_worker
+    # minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
+    # ip_host = node_worker
     # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
     # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
@@ -83,39 +65,24 @@ async def random_unstructured(image: UploadFile = File(), filename: str = Form()
         part_size=5 << 20 # 5MB chunks
     )
 
-    # enqueue to redis
-    redis_client.lpush('srgan', json.dumps(dict(
-        filename=input_filename,
-        image_name=f'srgan-ai-module:random_unstructured-{prune_amount}',
-        ai_type='srgan'
-    )))
-
-    # nanti disebelah sini akan dijalankan sebuah metode untuk menentukan proses yang datang ini akan
-    # dimasukkan pada worker mana ?
-    # 
-
-    # dequeue from redis
-    item = json.loads(redis_client.rpop('srgan').decode('utf-8'))
-    print(item)
-
-    cmd = ["docker", "run", "--rm", "--runtime", 'nvidia',
-           "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
-           "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),
-           "-e", f'FILENAME={input_filename}', "-e", f"MINIO_HOST={minio_host}",
-           "-e", f'IP_HOST={ip_host}', "-e", f"START_TIMESTAMP={start_timestamp}",
-           f"taufiqodhi/srgan-ai-module:random_unstructured-{prune_amount}"]
-    completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    queue = Queue(queue_name, connection=redis_client)
+    job = queue.enqueue(
+        'random_unstructured.main.srgan',
+        input_filename,
+        node_worker,
+        start_timestamp,
+        prune_amount
+    )
     
-    return dict(result=completed_process.stdout, error=completed_process.stderr)
+    return job.get_id()
 
 
-async def l1_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form()):
-    start_timestamp = datetime.datetime.now()
+async def l1_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form(), queue_name : str = Form(), start_timestamp : str = Form()):
     input_filename = f'{filename}_l1_norm_{prune_amount}_{datetime.datetime.now()}{Path(image.filename).suffix}'
     
     # minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
-    minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
-    ip_host = node_worker
+    # minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
+    # ip_host = node_worker
     # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
     # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
@@ -128,39 +95,24 @@ async def l1_norm(image: UploadFile = File(), filename: str = Form(), prune_amou
         part_size=5 << 20 # 5MB chunks
     )
 
-    # enqueue to redis
-    redis_client.lpush('srgan', json.dumps(dict(
-        filename=input_filename,
-        image_name=f'srgan-ai-module:l1_norm-{prune_amount}',
-        ai_type='srgan'
-    )))
+    queue = Queue(queue_name, connection=redis_client)
+    job = queue.enqueue(
+        'l1_norm.main.srgan',
+        input_filename,
+        node_worker,
+        start_timestamp,
+        prune_amount
+    )
 
-    # nanti disebelah sini akan dijalankan sebuah metode untuk menentukan proses yang datang ini akan
-    # dimasukkan pada worker mana ?
-    # 
-
-    # dequeue from redis
-    item = json.loads(redis_client.rpop('srgan').decode('utf-8'))
-    print(item)
-
-    cmd = ["docker", "run", "--rm", "--runtime", 'nvidia',
-           "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
-           "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),
-           "-e", f'FILENAME={input_filename}', "-e", f"MINIO_HOST={minio_host}",
-           "-e", f'IP_HOST={ip_host}', "-e", f"START_TIMESTAMP={start_timestamp}",
-           f"taufiqodhi/srgan-ai-module:l1_norm-{prune_amount}"]
-    completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    
-    return dict(result=completed_process.stdout, error=completed_process.stderr)
+    return job.get_id()
 
 
-async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form()):
-    start_timestamp = datetime.datetime.now()
+async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amount: int = Form(), node_worker: str = Form(), queue_name : str = Form(), start_timestamp : str = Form()):
     input_filename = f'{filename}_l2_norm_{prune_amount}_{datetime.datetime.now()}{Path(image.filename).suffix}'
     
     # minio_host = os.popen("ip addr | awk '/inet/ && /eno1/ {print $2}'").read().split('/')[0]
-    minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
-    ip_host = node_worker
+    # minio_host = os.popen("ip addr | awk '/inet/ && /wlo1/ {print $2}'").read().split('/')[0]
+    # ip_host = node_worker
     # minio_host = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio-server").read()
     # ip_host = os.popen("ip addr | awk '/inet/ && /docker0/ {print $2}'").read().split('/')[0]
 
@@ -173,33 +125,19 @@ async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amou
         part_size=5 << 20 # 5MB chunks
     )
 
-    # enqueue to redis
-    redis_client.lpush('srgan', json.dumps(dict(
-        filename=input_filename,
-        image_name=f'srgan-ai-module:l2_norm-{prune_amount}',
-        ai_type='srgan'
-    )))
+    queue = Queue(queue_name, connection=redis_client)
+    job = queue.enqueue(
+        'l2_norm.main.srgan',
+        input_filename,
+        node_worker,
+        start_timestamp,
+        prune_amount
+    )
 
-    # nanti disebelah sini akan dijalankan sebuah metode untuk menentukan proses yang datang ini akan
-    # dimasukkan pada worker mana ?
-    # 
-
-    # dequeue from redis
-    item = json.loads(redis_client.rpop('srgan').decode('utf-8'))
-    print(item)
-
-    cmd = ["docker", "run", "--rm", "--runtime", 'nvidia',
-           "-v", os.path.expanduser("~/Projects/Thesis/input_files:/app/input_files"),
-           "-v", os.path.expanduser("~/Projects/Thesis/output_files:/app/output_files"),
-           "-e", f'FILENAME={input_filename}', "-e", f"MINIO_HOST={minio_host}",
-           "-e", f'IP_HOST={ip_host}', "-e", f"START_TIMESTAMP={start_timestamp}",
-           f"taufiqodhi/srgan-ai-module:l2_norm-{prune_amount}"]
-    completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    
-    return dict(result=completed_process.stdout, error=completed_process.stderr)
+    return job.get_id()
 
 
-async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form(), tipe_model: str = Form(), ip_host: str = Form()):
+async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form(), tipe_model: str = Form(), ip_host_manager: str = Form()):
     vram_log = os.popen('nvidia-smi').read()
 
     gsheet_client = gspread.Client(Credentials.from_authorized_user_file(TOKEN_LOCATION, SCOPES))
@@ -208,7 +146,7 @@ async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image
     sheet.append_row([f'http://localhost:9000/super-resolution/input_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/output_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/vram_logs/{filename}',
-                      start_timestamp, requests.get(f'http://{ip_host}:8001/get_current_datetime').text[1:-1], tipe_model, NODE_WORKER])
+                      start_timestamp, requests.get(f'http://{ip_host_manager}:8001/get_current_datetime').text[1:-1], tipe_model, NODE_WORKER])
     
     minio_client.put_object(
         bucket_name=bucket_name,

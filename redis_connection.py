@@ -1,6 +1,6 @@
 from redis import Redis
 from rq import Queue
-from dwo_cp import get_solution_matrix
+
 
 redis_client = Redis(host='localhost', port=6379, db=0)
 
