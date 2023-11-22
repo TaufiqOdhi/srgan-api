@@ -135,7 +135,7 @@ async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amou
     return job.get_id()
 
 
-async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form(), tipe_model: str = Form(), ip_host_manager: str = Form()):
+async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form(), tipe_model: str = Form(), ip_host_manager: str = Form(), status_process : str = Form(), message_process : str = Form('Berhasil diproses')):
     vram_log = os.popen('nvidia-smi').read()
 
     gsheet_client = gspread.Client(Credentials.from_authorized_user_file(TOKEN_LOCATION, SCOPES))
@@ -144,7 +144,8 @@ async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image
     sheet.append_row([f'http://localhost:9000/super-resolution/input_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/output_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/vram_logs/{filename}',
-                      start_timestamp, requests.get(f'http://{ip_host_manager}:8001/get_current_datetime').text[1:-1], tipe_model, NODE_WORKER])
+                      start_timestamp, requests.get(f'http://{ip_host_manager}:8001/get_current_datetime').text[1:-1], tipe_model, NODE_WORKER], 
+                      status_process, message_process)
     
     minio_client.put_object(
         bucket_name=bucket_name,
