@@ -1,10 +1,8 @@
 import datetime
-import json
 import gspread
 import requests
 from io import BytesIO
 from fastapi import File, Form, UploadFile
-import subprocess
 import os
 from pathlib import Path
 from minio_connection import minio_client, bucket_name
