@@ -1,5 +1,9 @@
 import random
 import numpy as np
+import datetime
+import gspread
+from google.oauth2.credentials import Credentials
+from login_gsheet import SCOPES, TOKEN_LOCATION
 from test_srgan import client, base_dir, worker_list
 from dwo_cp import get_solution_matrix
 
@@ -11,7 +15,7 @@ phi = 1.61803398875
 
 # menggantikan vm dengan tipe model
 def test_dwo_cp_1():
-    list_s = get_solution_matrix(n=5, m=4, c=3, num_agent=5)
+    list_s = get_solution_matrix(n=5, m=4, c=20, num_agent=5)
 
     list_eva_pm = []
     for s in list_s:
@@ -24,7 +28,13 @@ def test_dwo_cp_1():
 
     random_s = s_opt
     # random_s = random.choice(list_s)
-    print(random_s)
+    
+    # push to googlesheet for selected solution in list_s
+    gsheet_client = gspread.Client(Credentials.from_authorized_user_file(TOKEN_LOCATION, SCOPES))
+    spreadsheet = gsheet_client.open_by_url('https://docs.google.com/spreadsheets/d/1PaFime-HZc-U9Zt3MwzZLolC5BMQWTauUuqZ_JRNIhI/edit#gid=0')
+    sheet = spreadsheet.get_worksheet(1)
+    sheet.append_row([random_s.__str__()])
+
 
     threads = []
     for index in range(len(random_s[0])):
@@ -41,7 +51,8 @@ def test_dwo_cp_1():
                 filename=filename,
                 prune_amount=prune_amount,
                 node_worker=node_worker,
-                queue_name=curr_docker_context
+                queue_name=curr_docker_context,
+                start_timestamp=datetime.datetime.now().__str__(),
             ),
             files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
         )
