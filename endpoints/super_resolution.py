@@ -135,7 +135,16 @@ async def l2_norm(image: UploadFile = File(), filename: str = Form(), prune_amou
     return job.get_id()
 
 
-async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image_filename: str = Form(), tipe_model: str = Form(), ip_host_manager: str = Form(), status_process : str = Form(), message_process : str = Form('Berhasil diproses')):
+async def vram_logs(filename: str = Form(),
+                    start_timestamp: str = Form(),
+                    image_filename: str = Form(),
+                    tipe_model: str = Form(),
+                    ip_host_manager: str = Form(),
+                    status_process : str = Form(),
+                    message_process : str = Form('Berhasil diproses'),
+                    node_worker: str = Form(NODE_WORKER)
+                    ):
+    finish_timestamp = requests.get(f'http://{ip_host_manager}:8001/get_current_datetime').text[1:-1]
     vram_log = os.popen('nvidia-smi').read()
 
     gsheet_client = gspread.Client(Credentials.from_authorized_user_file(TOKEN_LOCATION, SCOPES))
@@ -144,8 +153,9 @@ async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image
     sheet.append_row([f'http://localhost:9000/super-resolution/input_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/output_files/{image_filename}',
                       f'http://localhost:9000/super-resolution/vram_logs/{filename}',
-                      start_timestamp, requests.get(f'http://{ip_host_manager}:8001/get_current_datetime').text[1:-1], tipe_model, NODE_WORKER, 
-                      status_process, message_process])
+                      start_timestamp, finish_timestamp, tipe_model, node_worker, 
+                      status_process, message_process,
+                      f'http://localhost:9000/super-resolution/current_worker/{filename}',])
     
     minio_client.put_object(
         bucket_name=bucket_name,
@@ -153,8 +163,8 @@ async def vram_logs(filename: str = Form(), start_timestamp: str = Form(), image
         data=BytesIO(bytes(vram_log, 'utf-8')),
         length=len(vram_log)
     )
+    requests.get(f'http://{ip_host_manager}:8001/current_worker_logs', dict(filename=filename, stack_name='srgan-worker-2'))
+    requests.post(f'http://{ip_host_manager}:8001/scale_check', dict(
+        time_processing=datetime.datetime.strptime(finish_timestamp, '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+    ))
     return vram_log 
-
-
-async def get_current_datetime():
-    return datetime.datetime.now()

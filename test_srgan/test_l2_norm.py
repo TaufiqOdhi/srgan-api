@@ -5,6 +5,7 @@ import datetime
 
 srgan_endpoint = '/l2_norm'
 node_worker, queue_name = worker_list[0]
+# queue_name = 'all'
 
 
 def test_l2_norm_1():

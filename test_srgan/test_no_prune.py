@@ -5,6 +5,7 @@ import datetime
 
 srgan_enpoint = '/no_prune'
 node_worker, queue_name = worker_list[0]
+# queue_name = 'all'
 
 
 def test_no_prune_1():

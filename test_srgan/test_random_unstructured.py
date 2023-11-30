@@ -5,6 +5,7 @@ import datetime
 
 srgan_endpoint = '/random_unstructured'
 node_worker, queue_name = worker_list[0]
+# queue_name = 'all'
 
 
 def test_random_unstructured_1():

@@ -5,6 +5,8 @@ import datetime
 
 srgan_enpoint = '/l1_norm'
 node_worker, queue_name = worker_list[0]
+# queue_name = 'test_queue'
+# queue_name = 'all'
 
 
 def test_l1_norm_1():
