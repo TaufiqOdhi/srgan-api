@@ -4,7 +4,7 @@ from io import BytesIO
 from minio_connection import minio_client, bucket_name
 
 async def get_current_datetime():
-    return datetime.datetime.now()
+    return datetime.datetime.now().__str__()
 
 
 async def current_worker_logs(filename: str, stack_name: str = 'srgan-worker'):

@@ -164,7 +164,5 @@ async def vram_logs(filename: str = Form(),
         length=len(vram_log)
     )
     requests.get(f'http://{ip_host_manager}:8001/current_worker_logs', dict(filename=filename, stack_name='srgan-worker-2'))
-    requests.post(f'http://{ip_host_manager}:8001/scale_check', dict(
-        time_processing=datetime.datetime.strptime(finish_timestamp, '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime.strptime(start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
-    ))
+    requests.post(f'http://{ip_host_manager}:8001/scale_check', dict(start_timestamp=start_timestamp, finish_timestamp=finish_timestamp))
     return vram_log 

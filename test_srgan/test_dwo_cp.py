@@ -52,6 +52,7 @@ def test_dwo_cp_1():
                 prune_amount=prune_amount,
                 node_worker=node_worker,
                 queue_name=curr_docker_context,
+                # queue_name='all',
                 start_timestamp=datetime.datetime.now().__str__(),
             ),
             files=dict(image=open(f'{base_dir}/{filename}.png', 'rb'))
