@@ -5,7 +5,7 @@ import gspread
 from google.oauth2.credentials import Credentials
 from login_gsheet import SCOPES, TOKEN_LOCATION
 from test_srgan import client, base_dir, worker_list
-from dwo_cp import get_solution_matrix
+from dwo_cp_modified import get_solution_matrix
 
 srgan_endpoint_list = ['/no_prune', '/random_unstructured', '/l1_norm', '/l2_norm']
 filename_list = ['1', '2', '3', '4', '5', '6']
@@ -41,7 +41,7 @@ def test_dwo_cp_1():
         filename = random.choice(filename_list)
         prune_amount = random.choice(prune_amount_list)
         # srgan_endpoint = srgan_endpoint_list[int(random_s[0][index]-1)]
-        srgan_endpoint = srgan_endpoint_list[0]
+        srgan_endpoint = srgan_endpoint_list[3]
         node_worker, curr_docker_context = worker_list[int(random_s[1][index])-1]
         # os.system(f'docker context use {curr_docker_context}')
 
