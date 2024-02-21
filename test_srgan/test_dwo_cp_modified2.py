@@ -13,7 +13,7 @@ prune_amount_list = [30, 50, 70]
 phi = 1.61803398875
 
 # =========================================
-# dwocp only MAX
+# All MAX
 # =========================================
 
 # menggantikan vm dengan tipe model
@@ -25,7 +25,7 @@ def test_dwo_cp_1():
         list_eva_pm.append(len(np.unique(s[1])))
 
     # find optimal solution
-    opt_eva = np.min(list_eva_pm)
+    opt_eva = np.max(list_eva_pm)
     index_opt_eva = list_eva_pm.index(opt_eva)
     s_opt = list_s[index_opt_eva]
 
